@@ -1,0 +1,46 @@
+---
+
+- name: Install packages
+  package:
+    name: "{{ smb_package }}"
+    state: present
+
+- name: Create credentials directory
+  file:
+    path: "{{ smb_credentials_path }}"
+    state: directory
+    mode: '0700'
+    owner: root
+    group: root
+
+- name: Remove credential files for absent mountpoints
+  file:
+    path: "{{ smb_credentials_path }}/{{ item.name[1:] | replace('/', '-') }}"
+    state: absent
+  when: item.state == "absent"
+  loop: "{{ smb_mountpoints }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Generate credential files
+  template:
+    src: credentials.j2
+    dest: "{{ smb_credentials_path }}/{{ item.name[1:] | replace('/', '-') }}"
+    mode: '0600'
+    owner: root
+    group: root
+  when: item.state != "absent"
+  loop: "{{ smb_mountpoints }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Create mountpoints
+  mount:
+    name: "{{ item.name }}"
+    fstype: cifs
+    state: "{{ item.state }}"
+    src: "{{ item.src }}"
+    opts: "_netdev,credentials={{ smb_credentials_path }}/{{ item.name[1:] | replace('/', '-') }},iocharset=utf8,rw,{% if item.user is defined %}uid={{ item.user }},{% endif %}{% if item.group is defined %}gid={{ item.group }},{% endif %}file_mode=0664,dir_mode=0775"
+  loop: "{{ smb_mountpoints }}"
+  loop_control:
+    label: "{{ item.name }}"

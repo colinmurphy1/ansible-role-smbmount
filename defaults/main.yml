@@ -1,0 +1,15 @@
+---
+
+smb_package: cifs-utils
+
+smb_credentials_path: "/etc/smb"
+
+smb_mountpoints: []
+  # - name: "/mnt/files"
+  #   state: mounted
+  #   src: "//fileserver.domain.tld/files"
+  #   smb_username: "smb_username"
+  #   smb_password: "smb_password"
+  #   smb_domain: "domain.tld"
+  #   user: "mountpoint_owner"
+  #   group: "mountpoint_group"
