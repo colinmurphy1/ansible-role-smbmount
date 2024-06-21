@@ -1,1 +1,19 @@
+galaxy_info:
+  role_name: smbmount
+  namespace: cmurphy
+  author: Colin Murphy
+  description: Configures SMB/CIFS mountpoints on Linux.
+  license: MIT
+  min_ansible_version: '2.5'
+  platforms:
+    - name: Debian
+      version: all
+    - name: Ubuntu
+      version: all
+  galaxy_tags:
+    - samba
+    - smb
+    - cifs
+    - mount
+
 dependencies: []

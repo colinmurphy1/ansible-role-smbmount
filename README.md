@@ -26,10 +26,11 @@ None
 ## Example Playbook
 
 ```yaml
-- hosts: all
-  become: yes
+- name: SMB mountpoint
+  hosts: all
+  become: true
   roles:
-    - smbmount
+    - cmurphy.smbmount
   vars:
     smb_mountpoints:
       - name: "/mnt/files"

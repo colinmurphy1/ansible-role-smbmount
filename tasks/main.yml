@@ -1,12 +1,12 @@
 ---
 
 - name: Install packages
-  package:
+  ansible.builtin.package:
     name: "{{ smb_package }}"
     state: present
 
 - name: Create credentials directory
-  file:
+  ansible.builtin.file:
     path: "{{ smb_credentials_path }}"
     state: directory
     mode: '0700'
@@ -14,7 +14,7 @@
     group: root
 
 - name: Remove credential files for absent mountpoints
-  file:
+  ansible.builtin.file:
     path: "{{ smb_credentials_path }}/{{ item.name[1:] | replace('/', '-') }}"
     state: absent
   when: item.state == "absent"
@@ -23,7 +23,7 @@
     label: "{{ item.name }}"
 
 - name: Generate credential files
-  template:
+  ansible.builtin.template:
     src: credentials.j2
     dest: "{{ smb_credentials_path }}/{{ item.name[1:] | replace('/', '-') }}"
     mode: '0600'
@@ -35,12 +35,12 @@
     label: "{{ item.name }}"
 
 - name: Create mountpoints
-  mount:
+  ansible.posix.mount:
     name: "{{ item.name }}"
     fstype: cifs
     state: "{{ item.state }}"
     src: "{{ item.src }}"
-    opts: "_netdev,credentials={{ smb_credentials_path }}/{{ item.name[1:] | replace('/', '-') }},iocharset=utf8,rw,{% if item.user is defined %}uid={{ item.user }},{% endif %}{% if item.group is defined %}gid={{ item.group }},{% endif %}file_mode=0664,dir_mode=0775"
+    opts: "netdev,credentials={{ smb_credentials_path }}/{{ item.name[1:] | replace('/', '-') }},iocharset=utf8,rw,{% if item.user is defined %}uid={{ item.user }},{% endif %}{% if item.group is defined %}gid={{ item.group }},{% endif %}file_mode=0664,dir_mode=0775"
   loop: "{{ smb_mountpoints }}"
   loop_control:
     label: "{{ item.name }}"
