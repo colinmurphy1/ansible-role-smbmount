@@ -40,7 +40,10 @@
     fstype: cifs
     state: "{{ item.state }}"
     src: "{{ item.src }}"
-    opts: "_netdev,credentials={{ smb_credentials_path }}/{{ item.name[1:] | replace('/', '-') }},iocharset=utf8,rw,{% if item.user is defined %}uid={{ item.user }},{% endif %}{% if item.group is defined %}gid={{ item.group }},{% endif %}file_mode=0664,dir_mode=0775"
+    opts: "_netdev,credentials={{ smb_credentials_path }}/{{ item.name[1:] | replace('/', '-') }},iocharset=utf8,rw,\
+      {% if item.user is defined %}uid={{ item.user }},{% endif %}\
+      {% if item.group is defined %}gid={{ item.group }},{% endif %}\
+      file_mode=0664,dir_mode=0775"
   loop: "{{ smb_mountpoints }}"
   loop_control:
     label: "{{ item.name }}"
